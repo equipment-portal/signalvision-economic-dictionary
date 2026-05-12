@@ -1,0 +1,9 @@
+{
+  "version": "2026.05.12.001",
+  "updated_at": "2026-05-12 21:00:00",
+  "translations": {
+    "Initial Jobless Claims": "新規失業保険申請件数",
+    "Core CPI YoY": "コア消費者物価指数（前年比）",
+    "Machine Tool Orders YoY": "工作機械受注（前年比）"
+  }
+}
