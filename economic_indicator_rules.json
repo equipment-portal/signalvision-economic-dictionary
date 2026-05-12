@@ -1,0 +1,28 @@
+{
+  "version": "2026.05.12.001",
+  "suffix_rules": {
+    "YoY": "前年比",
+    "MoM": "前月比",
+    "QoQ": "前期比",
+    "SA": "季節調整済み",
+    "NSA": "季節調整前"
+  },
+  "term_rules": {
+    "CPI": "消費者物価指数",
+    "Core CPI": "コア消費者物価指数",
+    "PPI": "生産者物価指数",
+    "GDP": "国内総生産",
+    "Retail Sales": "小売売上高",
+    "Unemployment Rate": "失業率",
+    "Manufacturing PMI": "製造業PMI",
+    "Services PMI": "サービス業PMI"
+  },
+  "country_rules": {
+    "US": "米国",
+    "JP": "日本",
+    "EU": "欧州",
+    "GB": "英国",
+    "DE": "ドイツ",
+    "CN": "中国"
+  }
+}
