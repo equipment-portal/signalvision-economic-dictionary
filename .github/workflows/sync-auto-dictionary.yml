@@ -1,0 +1,68 @@
+name: Sync SignalVision Auto Dictionary
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "37 */6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download approved dictionary candidates
+        env:
+          WORKER_URL: ${{ secrets.SVP_DICTIONARY_WORKER_URL }}
+          EXPORT_KEY: ${{ secrets.SVP_DICTIONARY_EXPORT_KEY }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${EXPORT_KEY}" \
+            "${WORKER_URL%/}/v1/export" \
+            -o approved_export.json
+
+      - name: Merge approved items into dictionary
+        env:
+          SVP_REPORT_ENDPOINT: ${{ secrets.SVP_DICTIONARY_WORKER_URL }}
+          # Optional: set this if automatic file detection does not find your dictionary JSON.
+          # SVP_DICTIONARY_FILE: economic_indicator_translations_latest.json
+        run: python scripts/merge_dictionary.py
+
+      - name: Commit and push when changed
+        id: commit
+        run: |
+          set -euo pipefail
+          git config user.name "signalvision-dictionary-bot"
+          git config user.email "signalvision-dictionary-bot@users.noreply.github.com"
+          git add manifest.json '*.json' || true
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Auto-update economic indicator dictionary"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Mark exported items as published
+        env:
+          WORKER_URL: ${{ secrets.SVP_DICTIONARY_WORKER_URL }}
+          EXPORT_KEY: ${{ secrets.SVP_DICTIONARY_EXPORT_KEY }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          ids = json.loads(Path('published_ids.json').read_text(encoding='utf-8')) if Path('published_ids.json').exists() else []
+          Path('ack.json').write_text(json.dumps({'ids': ids}), encoding='utf-8')
+          PY
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer ${EXPORT_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary @ack.json \
+            "${WORKER_URL%/}/v1/ack"
