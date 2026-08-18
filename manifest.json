@@ -3,6 +3,7 @@
   "updated_at": "2026-05-12 21:00:00",
   "dictionary_url": "https://raw.githubusercontent.com/equipment-portal/signalvision-economic-dictionary/main/economic_indicator_translations_latest.json",
   "rules_url": "https://raw.githubusercontent.com/equipment-portal/signalvision-economic-dictionary/main/economic_indicator_rules.json",
+  "report_endpoint": "https://signalvision-dictionary-cloud.signalvisionpro.workers.dev/v1/report",
   "min_app_version": "2.0.0",
   "message": "経済指標翻訳辞書を更新しました。"
 }
